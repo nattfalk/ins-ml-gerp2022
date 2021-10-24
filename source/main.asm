@@ -580,6 +580,7 @@ setspritepointers:
 	!byte %00000000,%00000000,%00000000
 
 	*= textcolors
+	;Packs well
 	!byte $0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b,$0b
 	!byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c
 	!byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c
@@ -651,36 +652,7 @@ setspritepointers:
 	!byte $00
 	!byte $00
 
-
 	*= text
-	//!scr " +------------------------------------+ "
-	//!scr " :    _ _   __  _ _   __   __  __     : "
-	//!scr " :   | Y | (_  | Y | | _) (_  | _)    : "
-	//!scr " :   | | | (__ | | | |__) (__ |  |    : "
-	//!scr " :                  __  ___           : "
-	//!scr " :           |   | (__   |            : "
-	//!scr " :           |__ | ___)  |            : "
-	//!scr " :                                    : "
-	//!scr " :                                    : "
-	//!scr " :                                    : "
-	//!scr " :                                    : "
-	//!scr " :                                    : "
-	//!scr " +------------------------------------+ "
-
-	//!scr " UDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDI "
-	//!scr " G                                    H "
-	//!scr " G             welcome to             H "
-	//!scr " G   the official insane memberlist   H "
-	//!scr " G                                    H "
-	//!scr " G      released & presented at       H "
-	//!scr " G           S gerp 2022 S            H "
-	//!scr " G                                    H "
-	//!scr " G        code & gfx by randy         H "
-	//!scr " G             sfx by dlx             H "
-	//!scr " G                                    H "
-	//!scr " G                                    H "
-	//!scr " JFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFK "
-
 	!scr "                                        "
 	!scr "                                        "
 	!scr "               welcome to               "
