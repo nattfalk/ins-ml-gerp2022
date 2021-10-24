@@ -1,4 +1,4 @@
-TARGET=insane
+TARGET=ins-ml-gerp2022
 all: compile crunch disk clean run
 
 compile:

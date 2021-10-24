@@ -714,7 +714,7 @@ setspritepointers:
 	!scr "                                        "
 	!scr "           handle : bigge               "
 	!scr "         function : code                "
-	!scr "      nationality :                     "
+	!scr "      nationality : swedish             "
 	!scr "              age :                     "
 	!scr "     scener since :                     "
 	!scr "         fun fact :                     "
