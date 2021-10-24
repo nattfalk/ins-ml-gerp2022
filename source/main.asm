@@ -900,7 +900,7 @@ setspritepointers:
 	!scr "              age :                     "
 	!scr "     scener since :                     "
 	!scr "         fun fact : can probably drink  "
-	!scr "                    you under the table "
+	!scr "                    you under the table."
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
