@@ -45,7 +45,7 @@
 
 	lda #$7f
 	sta delayindex
-
+	
 	jsr sid
 	jsr initsprites
 	jsr setspritepointers
@@ -169,7 +169,7 @@ gfxirq:
 	lda #>txtirq
 	sta $ffff
 	rti
-
+	
 txtirq:
 	asl $d019
 
@@ -181,7 +181,7 @@ txtirq:
 
 	lda #%00011110
 	sta $d018
-
+	
 	jsr colorcycle
 	jsr textwriter
 
@@ -703,9 +703,9 @@ setspritepointers:
 	!scr "      nationality : swedish             "
 	!scr "              age :                     "
 	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
+	!scr "         fun fact : inventor and proud  "
+	!scr "                    performer of the    "
+	!scr "                    legendary chipdans. "
 	!scr "                                        "
 	!scr "                                        "
 
@@ -899,8 +899,8 @@ setspritepointers:
 	!scr "      nationality : swedish             "
 	!scr "              age :                     "
 	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
+	!scr "         fun fact : can probably drink  "
+	!scr "                    you under the table "
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
@@ -937,15 +937,15 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : randy               "
-	!scr "         function : code, gfx, sfx      "
+	!scr "         function : code, gfx, dsg, sfx "
 	!scr "      nationality : swedish             "
 	!scr "              age : 43                  "
 	!scr "     scener since : 1989                "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
+	!scr "         fun fact : avid fisherman and  "
+	!scr "                    pipesmoker. loves to"
+	!scr "                    drive muscle cars.  "
+	!scr "                    listens to black    "
+	!scr "                    metal on vinyl.     "
 
 	!scr "                                        "
 	!scr "                                        "
@@ -970,10 +970,10 @@ setspritepointers:
 	!scr "              age :                     "
 	!scr "     scener since :                     "
 	!scr "         fun fact : has a penis so small"
-	!scr "                    even microscopes    "
+	!scr "                    that microscopes    "
 	!scr "                    cannot measure it.  "
 	!scr "                                        "
-	!scr "                    science is puzzled. "
+	!scr "                   ...science is puzzled"
 
 	!scr "                                        "
 	!scr "                                        "
@@ -1011,7 +1011,7 @@ setspritepointers:
 	!scr "      nationality : swedish             "
 	!scr "              age : 44                  "
 	!scr "     scener since : 1992                "
-	!scr "         fun fact :                     "
+	!scr "         fun fact : afraid of horses.   "
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
