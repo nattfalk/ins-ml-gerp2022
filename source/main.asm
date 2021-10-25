@@ -28,6 +28,7 @@
 		spriteposy = $4320
 		spritespeed = $4330
 		text = $4440
+		scrolltext = $4440
 		spritesposmem = $d000
 		colormem = $d800
 		line1colormem = colormem + 9 * 40
@@ -522,30 +523,8 @@ setspritepointers:
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00011000,%00000000
-	!byte %00000000,%00011000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00010000,%00000000
 	!byte %00000000,%00111000,%00000000
-	!byte %00000000,%00010000,%00000000
+	!byte %00000000,%00111000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
@@ -566,9 +545,31 @@ setspritepointers:
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%00101000,%00000000
+	!byte %00000000,%01111100,%00000000
 	!byte %00000000,%00010000,%00000000
 	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00000000,%00000000
+	!byte %00000000,%00010000,%00000000
+	!byte %00000000,%00010000,%00000000
+	!byte %00000000,%01101100,%00000000
+	!byte %00000000,%00010000,%00000000
+	!byte %00000000,%00010000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
 	!byte %00000000,%00000000,%00000000
@@ -601,7 +602,7 @@ setspritepointers:
 	*= cursorcolors
 	!byte $00,$00,$0b,$02,$02,$04,$04,$0a,$0a,$0a,$0a,$0a,$0a,$04,$04,$02,$02,$0b,$00,$00
 
-*= spriteposx
+	*= spriteposx
 	!byte 30
 	!byte $00
 	!byte 60
@@ -618,7 +619,7 @@ setspritepointers:
 	!byte $00
 	!byte 240
 
-*= spriteposy
+	*= spriteposy
 	!byte 130
 	!byte $00
 	!byte 150
@@ -635,12 +636,12 @@ setspritepointers:
 	!byte $00
 	!byte 220
 
-*= spritespeed
+	*= spritespeed
 	!byte $01
 	!byte $00
 	!byte $00
 	!byte $00
-	!byte $03
+	!byte $01
 	!byte $00
 	!byte $01
 	!byte $00
@@ -669,7 +670,6 @@ setspritepointers:
 
 	!scr "                                        "
 	!scr "                                        "
-	!scr "                                        "
 	!scr "           handle : alpa                "
 	!scr "         function : sfx                 "
 	!scr "      nationality : swedish             "
@@ -680,8 +680,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : bigge               "
@@ -694,8 +694,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : bitflippr           "
@@ -708,8 +708,8 @@ setspritepointers:
 	!scr "                    legendary chipdans. "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : bjoppen             "
@@ -722,8 +722,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : bonefish            "
@@ -736,8 +736,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : boogeyman           "
@@ -750,8 +750,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : corel               "
@@ -764,8 +764,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : corpsicle           "
@@ -778,8 +778,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : dlx                 "
@@ -792,8 +792,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : evarcha             "
@@ -806,8 +806,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : jojo073             "
@@ -820,8 +820,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : juice               "
@@ -834,8 +834,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : kefka               "
@@ -848,8 +848,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : magnus              "
@@ -862,8 +862,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : mrk                 "
@@ -876,8 +876,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : mygg                "
@@ -890,8 +890,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : origo               "
@@ -904,8 +904,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : premium             "
@@ -918,8 +918,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : prospect            "
@@ -932,8 +932,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : randy               "
@@ -946,8 +946,8 @@ setspritepointers:
 	!scr "                    drive muscle cars.  "
 	!scr "                    listens to black    "
 	!scr "                    metal on vinyl.     "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : rds                 "
@@ -960,8 +960,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : skurk               "
@@ -973,9 +973,9 @@ setspritepointers:
 	!scr "                    that microscopes    "
 	!scr "                    cannot measure it.  "
 	!scr "                                        "
-	!scr "                   ...science is puzzled"
-
+	!scr "                    science is puzzled. "
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : tmx                 "
@@ -988,8 +988,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : triace              "
@@ -1002,8 +1002,8 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
-
 	!scr "                                        "
+
 	!scr "                                        "
 	!scr "                                        "
 	!scr "           handle : vedder              "
@@ -1016,5 +1016,10 @@ setspritepointers:
 	!scr "                                        "
 	!scr "                                        "
 	!scr "                                        "
+	!scr "                                        "
 
+	!byte $ff
+
+	*= scrolltext
+	!scr ""
 	!byte $ff
