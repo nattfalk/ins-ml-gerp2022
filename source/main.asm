@@ -1,5 +1,6 @@
 	rasterline1 = 0
 	rasterline2 = 118
+	rasterline3 = 242
 
 	!address{
 		characterindex = $64
@@ -13,7 +14,7 @@
 		screenmem = $0400
 		textscreenmem = screenmem + 10 * 40
 		line1 = screenmem + 9 * 40
-		line2 = screenmem + 24 * 40
+		line2 = screenmem + 23 * 40
 		sid = $1000
 		sidplay = $1003
 		logobitmap = $2000
@@ -28,11 +29,10 @@
 		spriteposy = $4320
 		spritespeed = $4330
 		text = $4440
-		scrolltext = $4440
 		spritesposmem = $d000
 		colormem = $d800
 		line1colormem = colormem + 9 * 40
-		line2colormem = colormem + 24 * 40
+		line2colormem = colormem + 23 * 40
 		textcolormem = $d990
 	}
 
@@ -44,13 +44,17 @@
 	sta $d020
 	sta $d021
 
-	lda #$7f
+	;lda #$7f
+	lda #$32
 	sta delayindex
 	
 	jsr sid
 	jsr initsprites
 	jsr setspritepointers
 	jsr resetpointers
+    jsr logo
+    jsr horizontallines
+    jsr main
 
 logo:
 	ldx #$00
@@ -75,6 +79,7 @@ logo:
 	inx
 	cpx #$40
 	bne -
+	rts
 
 horizontallines:
 	ldx #$00
@@ -86,6 +91,7 @@ horizontallines:
 	inx
 	cpx #40
 	bne -
+    rts
 
 main:
 	sei
@@ -112,46 +118,8 @@ main:
 
 	jmp *
 
-initsprites:
-	lda #%11111111
-	sta $d015
-	sta $d01b
-
-	lda #%00000000
-	sta $d017
-	sta $d01c
-	sta $d01d
-
-	lda #$01
-	sta $d027
-
-	lda #$06
-	sta $d028
-
-	lda #$0c
-	sta $d029
-
-	lda #$07
-	sta $d02a
-
-	lda #$01
-	sta $d02b
-
-	lda #$06
-	sta $d02c
-
-	lda #$0c
-	sta $d02d
-
-	lda #$07
-	sta $d02e
-	rts
-
 gfxirq:
 	asl $d019
-
-	jsr sidplay
-	jsr starfield
 
 	lda #%00111011
 	sta $d011
@@ -161,6 +129,9 @@ gfxirq:
 
 	lda #%00011110
 	sta $d018
+
+	jsr sidplay
+	jsr starfield
 
 	lda #rasterline2
 	sta $d012
@@ -182,9 +153,23 @@ txtirq:
 
 	lda #%00011110
 	sta $d018
-	
+
 	jsr colorcycle
 	jsr textwriter
+
+	lda #rasterline3
+	sta $d012
+
+	lda #<scrollirq
+	sta $fffe
+	lda #>scrollirq
+	sta $ffff
+	rti
+
+scrollirq:
+	asl $d019
+
+    jsr textscroller
 
 	lda #rasterline1
 	sta $d012
@@ -194,6 +179,47 @@ txtirq:
 	lda #>gfxirq
 	sta $ffff
 	rti
+
+textscroller:
+	lda $d016
+	and #248
+	adc offset
+	sta $d016
+
+	dec smooth
+	bne continue
+
+	dec offset
+	bpl resetsmooth
+	lda #07
+	sta offset
+
+shiftrow:
+	ldx #00
+-	lda $07c1, x
+	sta $07c0, x
+	inx
+	cpx #39
+	bne -
+
+	ldx nextchar
+	lda scrolltext, x
+	sta $07e7			
+	inx
+	lda scrolltext, x
+	cmp #$ff
+	bne resetsmooth-3
+	ldx #00
+	stx nextchar
+
+resetsmooth:
+	ldx #01
+	stx smooth			
+
+continue:
+	;lda #%11001000
+	;sta $d016
+	rts
 
 starfield:
 	ldx #$00
@@ -226,6 +252,7 @@ colorcycle:
 	sta linecolors,x
 	sta line1colormem,x
 	sta line2colormem,x
+	sta line2colormem+40,x
 
 	inx
 	cpx #40
@@ -271,7 +298,7 @@ clearscreen:
 	sta textscreenmem + 255 * 2,x
 
 	inx
-	cpx #50
+	cpx #10
 	bne -
 
 	jsr clearindices
@@ -369,7 +396,8 @@ nextrow:
 	rts
 
 nextscreen:
-	lda #$ff
+	;lda #$ff
+	lda #$7f
 	sta delayindex
 	rts
 
@@ -416,6 +444,41 @@ settextpointer:
 	sta textpointer + 1
 	rts
 
+initsprites:
+	lda #%11111111
+	sta $d015
+	sta $d01b
+
+	lda #%00000000
+	sta $d017
+	sta $d01c
+	sta $d01d
+
+	lda #$01
+	sta $d027
+
+	lda #$06
+	sta $d028
+
+	lda #$0c
+	sta $d029
+
+	lda #$07
+	sta $d02a
+
+	lda #$01
+	sta $d02b
+
+	lda #$06
+	sta $d02c
+
+	lda #$0c
+	sta $d02d
+
+	lda #$07
+	sta $d02e
+	rts
+
 setspritepointers:
 	lda #$f8
 	sta $07f8
@@ -448,137 +511,10 @@ setspritepointers:
 	!binary "data/logo.kla",320,9002
 
 	*= charset
-	!byte $3c,$66,$6e,$6e,$60,$62,$3c,$00,$3e,$03,$7f,$63,$3f,$00,$00,$00
-	!byte $60,$7e,$63,$63,$7f,$00,$00,$00,$1f,$30,$60,$60,$7f,$00,$00,$00
-	!byte $03,$3f,$63,$63,$7f,$00,$00,$00,$3e,$63,$7f,$60,$7c,$00,$00,$00
-	!byte $3f,$60,$7e,$60,$60,$00,$00,$00,$3f,$63,$63,$63,$3f,$03,$7e,$00
-	!byte $60,$7e,$63,$63,$63,$00,$00,$00,$18,$00,$18,$18,$18,$00,$00,$00
-	!byte $0c,$0c,$0c,$0c,$0c,$0c,$f8,$00,$63,$63,$7e,$63,$63,$00,$00,$00
-	!byte $60,$60,$60,$60,$3f,$00,$00,$00,$7e,$6b,$6b,$63,$63,$00,$00,$00
-	!byte $7c,$66,$63,$63,$63,$00,$00,$00,$7e,$63,$63,$63,$3f,$00,$00,$00
-	!byte $3f,$63,$63,$63,$7f,$60,$60,$00,$7f,$63,$63,$67,$7f,$00,$00,$00
-	!byte $7e,$63,$63,$7e,$63,$00,$00,$00,$3f,$60,$7f,$03,$7e,$00,$00,$00
-	!byte $30,$3e,$30,$30,$1f,$00,$00,$00,$63,$63,$63,$63,$3f,$00,$00,$00
-	!byte $63,$63,$63,$36,$1c,$00,$00,$00,$63,$63,$6b,$6b,$3f,$00,$00,$00
-	!byte $63,$63,$3e,$63,$63,$00,$00,$00,$63,$63,$63,$63,$3f,$03,$7e,$00
-	!byte $7f,$03,$7f,$60,$7f,$00,$00,$00,$3c,$30,$30,$30,$30,$30,$3c,$00
-	!byte $0c,$12,$30,$7c,$30,$62,$fc,$00,$3c,$0c,$0c,$0c,$0c,$0c,$3c,$00
-	!byte $00,$18,$3c,$7e,$18,$18,$18,$18,$00,$10,$30,$7f,$7f,$30,$10,$00
-	!byte $00,$00,$00,$00,$00,$00,$00,$00,$18,$18,$18,$18,$00,$00,$18,$00
-	!byte $66,$66,$66,$00,$00,$00,$00,$00,$66,$66,$ff,$66,$ff,$66,$66,$00
-	!byte $18,$3e,$60,$3c,$06,$7c,$18,$00,$62,$66,$0c,$18,$30,$66,$46,$00
-	!byte $3c,$66,$3c,$38,$67,$66,$3f,$00,$06,$0c,$18,$00,$00,$00,$00,$00
-	!byte $0c,$18,$30,$30,$30,$18,$0c,$00,$30,$18,$0c,$0c,$0c,$18,$30,$00
-	!byte $00,$66,$3c,$ff,$3c,$66,$00,$00,$00,$18,$18,$7e,$18,$18,$00,$00
-	!byte $00,$00,$00,$00,$00,$18,$18,$30,$00,$00,$00,$7e,$00,$00,$00,$00
-	!byte $00,$00,$00,$18,$18,$00,$00,$00,$00,$03,$06,$0c,$18,$30,$60,$00
-	!byte $3e,$63,$6b,$63,$3e,$00,$00,$00,$38,$18,$18,$18,$3c,$00,$00,$00
-	!byte $7e,$03,$7f,$60,$7f,$00,$00,$00,$7e,$03,$7f,$03,$7f,$00,$00,$00
-	!byte $63,$63,$63,$7f,$03,$00,$00,$00,$7f,$60,$7f,$03,$7f,$00,$00,$00
-	!byte $3e,$60,$7f,$63,$7e,$00,$00,$00,$7e,$03,$1f,$03,$03,$00,$00,$00
-	!byte $3f,$63,$7f,$63,$7e,$00,$00,$00,$7e,$63,$63,$7f,$03,$00,$00,$00
-	!byte $00,$00,$18,$00,$00,$18,$00,$00,$00,$00,$18,$00,$00,$18,$18,$30
-	!byte $0e,$18,$30,$60,$30,$18,$0e,$00,$00,$00,$7e,$00,$7e,$00,$00,$00
-	!byte $70,$18,$0c,$06,$0c,$18,$70,$00,$3c,$66,$06,$0c,$18,$00,$18,$00
-	!byte $00,$00,$00,$ff,$ff,$00,$00,$00,$08,$1c,$3e,$7f,$7f,$1c,$3e,$00
-	!byte $18,$18,$18,$18,$18,$18,$18,$18,$00,$00,$00,$ff,$ff,$00,$00,$00
-	!byte $00,$00,$ff,$ff,$00,$00,$00,$00,$00,$ff,$ff,$00,$00,$00,$00,$00
-	!byte $00,$00,$00,$00,$ff,$ff,$00,$00,$30,$30,$30,$30,$30,$30,$30,$30
-	!byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$00,$00,$00,$e0,$f0,$38,$18,$18
-	!byte $18,$18,$1c,$0f,$07,$00,$00,$00,$18,$18,$38,$f0,$e0,$00,$00,$00
-	!byte $c0,$c0,$c0,$c0,$c0,$c0,$ff,$ff,$c0,$e0,$70,$38,$1c,$0e,$07,$03
-	!byte $03,$07,$0e,$1c,$38,$70,$e0,$c0,$ff,$ff,$c0,$c0,$c0,$c0,$c0,$c0
-	!byte $ff,$ff,$03,$03,$03,$03,$03,$03,$00,$3c,$7e,$7e,$7e,$7e,$3c,$00
-	!byte $00,$00,$00,$00,$00,$ff,$ff,$00,$36,$7f,$7f,$7f,$3e,$1c,$08,$00
-	!byte $60,$60,$60,$60,$60,$60,$60,$60,$00,$00,$00,$07,$0f,$1c,$18,$18
-	!byte $c3,$e7,$7e,$3c,$3c,$7e,$e7,$c3,$00,$3c,$7e,$66,$66,$7e,$3c,$00
-	!byte $18,$18,$66,$66,$18,$18,$3c,$00,$06,$06,$06,$06,$06,$06,$06,$06
-	!byte $08,$1c,$3e,$7f,$3e,$1c,$08,$00,$18,$18,$18,$ff,$ff,$18,$18,$18
-	!byte $c0,$c0,$30,$30,$c0,$c0,$30,$30,$18,$18,$18,$18,$18,$18,$18,$18
-	!byte $00,$00,$03,$3e,$76,$36,$36,$00,$ff,$7f,$3f,$1f,$0f,$07,$03,$01
-	!byte $00,$00,$00,$00,$00,$00,$00,$00,$f0,$f0,$f0,$f0,$f0,$f0,$f0,$f0
-	!byte $00,$00,$00,$00,$ff,$ff,$ff,$ff,$ff,$00,$00,$00,$00,$00,$00,$00
-	!byte $00,$00,$00,$00,$00,$00,$00,$ff,$c0,$c0,$c0,$c0,$c0,$c0,$c0,$c0
-	!byte $cc,$cc,$33,$33,$cc,$cc,$33,$33,$03,$03,$03,$03,$03,$03,$03,$03
-	!byte $00,$00,$00,$00,$cc,$cc,$33,$33,$ff,$fe,$fc,$f8,$f0,$e0,$c0,$80
-	!byte $03,$03,$03,$03,$03,$03,$03,$03,$18,$18,$18,$1f,$1f,$18,$18,$18
-	!byte $00,$00,$00,$00,$0f,$0f,$0f,$0f,$18,$18,$18,$1f,$1f,$00,$00,$00
-	!byte $00,$00,$00,$f8,$f8,$18,$18,$18,$00,$00,$00,$00,$00,$00,$ff,$ff
-	!byte $00,$00,$00,$1f,$1f,$18,$18,$18,$18,$18,$18,$ff,$ff,$00,$00,$00
-	!byte $00,$00,$00,$ff,$ff,$18,$18,$18,$18,$18,$18,$f8,$f8,$18,$18,$18
-	!byte $c0,$c0,$c0,$c0,$c0,$c0,$c0,$c0,$e0,$e0,$e0,$e0,$e0,$e0,$e0,$e0
-	!byte $07,$07,$07,$07,$07,$07,$07,$07,$ff,$ff,$00,$00,$00,$00,$00,$00
-	!byte $ff,$ff,$ff,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$ff,$ff,$ff
-	!byte $03,$03,$03,$03,$03,$03,$ff,$ff,$00,$00,$00,$00,$f0,$f0,$f0,$f0
-	!byte $0f,$0f,$0f,$0f,$00,$00,$00,$00,$18,$18,$18,$f8,$f8,$00,$00,$00
-	!byte $f0,$f0,$f0,$f0,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$ff,$00,$00,$00
+	!source "data/charset.dat"
 
 	*= sprites
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00111000,%00000000
-	!byte %00000000,%00111000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%01111100,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%01101100,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%00010000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
-	!byte %00000000,%00000000,%00000000
+	!source "data/sprites.dat"
 
 	*= textcolors
 	;Packs well
@@ -654,372 +590,14 @@ setspritepointers:
 	!byte $00
 
 	*= text
-	!scr "                                        "
-	!scr "                                        "
-	!scr "               welcome to               "
-	!scr "     the official insane memberlist     "
-	!scr "                                        "
-	!scr "        released & presented at         "
-	!scr "             S gerp 2022 S              "
-	!scr "                                        "
-	!scr "          code & gfx by randy           "
-	!scr "               sfx by dlx               "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : alpa                "
-	!scr "         function : sfx                 "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : bigge               "
-	!scr "         function : code                "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : bitflippr           "
-	!scr "         function : gfx                 "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact : inventor and proud  "
-	!scr "                    performer of the    "
-	!scr "                    legendary chipdans. "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : bjoppen             "
-	!scr "         function : sfx, gfx            "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : bonefish            "
-	!scr "         function : code                "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : boogeyman           "
-	!scr "         function : gfx, sfx            "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : corel               "
-	!scr "         function : gfx, ascii          "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : corpsicle           "
-	!scr "         function : sfx                 "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : dlx                 "
-	!scr "         function : sfx, gfx, code      "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : evarcha             "
-	!scr "         function : gfx                 "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : jojo073             "
-	!scr "         function : gfx                 "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : juice               "
-	!scr "         function : sfx                 "
-	!scr "      nationality : croatian            "
-	!scr "              age : 43                  "
-	!scr "     scener since : 1994                "
-	!scr "         fun fact : often plays games on"
-	!scr "                    his mobile while on "
-	!scr "                    the toilet until    "
-	!scr "                    both his legs go    "
-	!scr "                    numb                "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : kefka               "
-	!scr "         function : sfx                 "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : magnus              "
-	!scr "         function : code                "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : mrk                 "
-	!scr "         function : gfx                 "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : mygg                "
-	!scr "         function : sfx                 "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : origo               "
-	!scr "         function : code                "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact : can probably drink  "
-	!scr "                    you under the table."
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : premium             "
-	!scr "         function : gfx                 "
-	!scr "      nationality : german              "
-	!scr "              age : 46                  "
-	!scr "     scener since : 1989                "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : prospect            "
-	!scr "         function : code                "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : randy               "
-	!scr "         function : code, gfx, dsg, sfx "
-	!scr "      nationality : swedish             "
-	!scr "              age : 43                  "
-	!scr "     scener since : 1989                "
-	!scr "         fun fact : avid fisherman and  "
-	!scr "                    pipesmoker. loves to"
-	!scr "                    drive muscle cars.  "
-	!scr "                    listens to black    "
-	!scr "                    metal on vinyl.     "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : rds                 "
-	!scr "         function : capper              "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : skurk               "
-	!scr "         function : code                "
-	!scr "      nationality : norwegian           "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact : has a penis so small"
-	!scr "                    that microscopes    "
-	!scr "                    cannot measure it.  "
-	!scr "                                        "
-	!scr "                    science is puzzled. "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : tmx                 "
-	!scr "         function : gfx                 "
-	!scr "      nationality : swedish             "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : triace              "
-	!scr "         function : gfx                 "
-	!scr "      nationality :                     "
-	!scr "              age :                     "
-	!scr "     scener since :                     "
-	!scr "         fun fact :                     "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
-	!scr "                                        "
-	!scr "                                        "
-	!scr "           handle : vedder              "
-	!scr "         function : org, sfx, code, dsg "
-	!scr "      nationality : swedish             "
-	!scr "              age : 44                  "
-	!scr "     scener since : 1992                "
-	!scr "         fun fact : afraid of horses.   "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-	!scr "                                        "
-
+	!source "data/screens.dat"	
 	!byte $ff
 
-	*= scrolltext
-	!scr ""
-	!byte $ff
+offset:
+	!byte 07
+smooth:
+	!byte 01
+nextchar:
+	!byte 00
+scrolltext:
+	!scr "this is a scrolltext that needs improvement S ",$ff
