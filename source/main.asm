@@ -129,8 +129,8 @@ gfxirq:
 
 	lda #%00011110
 	sta $d018
-
-	jsr sidplay
+	
+	;jsr sidplay
 	jsr starfield
 
 	lda #rasterline2
@@ -145,11 +145,11 @@ gfxirq:
 txtirq:
 	asl $d019
 
-	lda #%11001000
-	sta $d016
-
 	lda #%00011011
 	sta $d011
+
+	lda #%11001000
+	sta $d016
 
 	lda #%00011110
 	sta $d018
@@ -164,12 +164,17 @@ txtirq:
 	sta $fffe
 	lda #>scrollirq
 	sta $ffff
+
 	rti
 
 scrollirq:
 	asl $d019
 
-    jsr textscroller
+	jsr textscroller
+	lda $d016
+	and #248
+	adc offset
+	sta $d016
 
 	lda #rasterline1
 	sta $d012
@@ -181,10 +186,6 @@ scrollirq:
 	rti
 
 textscroller:
-	lda $d016
-	and #248
-	adc offset
-	sta $d016
 
 	dec smooth
 	bne continue
@@ -214,11 +215,10 @@ shiftrow:
 
 resetsmooth:
 	ldx #01
-	stx smooth			
+	stx smooth
+	rts
 
-continue:
-	;lda #%11001000
-	;sta $d016
+continue:	
 	rts
 
 starfield:
@@ -252,7 +252,14 @@ colorcycle:
 	sta linecolors,x
 	sta line1colormem,x
 	sta line2colormem,x
-	sta line2colormem+40,x
+	adc #10
+	sta line2colormem + 40,x
+
+	lda #$00
+	sta line2colormem + 40
+	sta line2colormem + 41
+	sta line2colormem + 78
+	sta line2colormem + 79
 
 	inx
 	cpx #40
@@ -536,7 +543,7 @@ setspritepointers:
 	!byte $0b,$0b,$0b,$0b,$0c,$0c,$0c,$0c,$0f,$0f,$05,$05,$07,$07,$03,$03,$01,$01,$01,$01,$01,$01,$01,$01,$03,$03,$07,$07,$05,$05,$0f,$0f,$0c,$0c,$0c,$0c,$0b,$0b,$0b,$0b
 
 	*= cursorcolors
-	!byte $00,$00,$0b,$02,$02,$04,$04,$0a,$0a,$0a,$0a,$0a,$0a,$04,$04,$02,$02,$0b,$00,$00
+	!byte $00,$00,$0b,$02,$02,$04,$04,$0a,$0a,$0a,$01,$0a,$0a,$04,$04,$02,$02,$0b,$00,$00
 
 	*= spriteposx
 	!byte 30
