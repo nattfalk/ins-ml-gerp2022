@@ -130,7 +130,7 @@ gfxirq:
 	lda #%00011110
 	sta $d018
 	
-	;jsr sidplay
+	jsr sidplay
 	jsr starfield
 
 	lda #rasterline2
@@ -171,6 +171,7 @@ scrollirq:
 	asl $d019
 
 	jsr textscroller
+	
 	lda $d016
 	and #248
 	adc offset
@@ -607,4 +608,5 @@ smooth:
 nextchar:
 	!byte 00
 scrolltext:
-	!scr "this is a scrolltext that needs improvement S ",$ff
+	!source "data/scrolltext.dat"	
+	!byte $ff
